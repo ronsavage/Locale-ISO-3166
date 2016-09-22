@@ -42,18 +42,30 @@ sub populate_countries
 	$json			= decode_json($json);	# Hashref.
 	$json			= $$json{'3166-1'};		# Arrayref.
 
-	my(@codes);
+	my(@one);
 
 	for my $item (@$json)
 	{
 		$$item{official_name} = defined($$item{official_name}) ? $$item{official_name} : $$item{name};
 
-		push @codes, $item;
+		push @one, $item;
 	}
 
-	my($code2index)			= $self -> _save_countries(\@codes);
-#	my($names)				= $self -> _parse_country_page_2;
-#	my($subcountry_count)	= $self -> _save_subcountry_info($code2index, $names);
+	my($code2index)	= $self -> _save_countries(\@one);
+	$json_name		= 'iso_3166-2.json';
+	$path			= File::Spec -> catfile($dir_name, $json_name);
+	$json			= read_binary($path);
+	$json			= decode_json($json);	# Hashref.
+	$json			= $$json{'3166-2'};		# Arrayref.
+
+	my(@two);
+
+	for my $item (@$json)
+	{
+		push @two, $item;
+	}
+
+	$self -> _save_subcountry_info($code2index, \@two);
 
 	# Return 0 for success and 1 for failure.
 
@@ -147,22 +159,22 @@ sub _save_countries
 
 	my(%code2index);
 
-	for my $element (sort{$$a{name} cmp $$b{name} } @$table)
+	for my $item (sort{$$a{name} cmp $$b{name} } @$table)
 	{
 		$i++;
 
-		$code2index{$$element{alpha_2} } = $i;
+		$code2index{$$item{alpha_2} } = $i;
 
 		$sth -> execute
 		(
-			$$element{alpha_2},
-			$$element{alpha_3},
-			fc $$element{name},
-			fc $$element{official_name},
+			$$item{alpha_2},
+			$$item{alpha_3},
+			fc $$item{name},
+			fc $$item{official_name},
 			'No', # The default for 'has_subcountries'. Updated later.
-			$$element{name},
-			$$element{numeric},
-			$$element{official_name},
+			$$item{name},
+			$$item{numeric},
+			$$item{official_name},
 		);
 	}
 
@@ -180,53 +192,26 @@ sub _save_subcountry_info
 	my($self, $code2index, $table) = @_;
 
 	$self -> dbh -> begin_work;
-	$self -> dbh -> do('delete from subcountry_info');
+	$self -> dbh -> do('delete from subcountry_types');
 
-	my($has_subcountries_count)	= 0;
-	my($i)						= 0;
-	my($sql_1)					= 'insert into subcountry_info '
-									. '(country_id, name, sequence) '
-									. 'values (?, ?, ?)';
-	my($sth_1)					= $self -> dbh -> prepare($sql_1) || die "Unable to prepare SQL: $sql_1\n";
-	my($sql_2)					= 'update countries set has_subcountries = ? where id = ?';
-	my($sth_2)					= $self -> dbh -> prepare($sql_2) || die "Unable to prepare SQL: $sql_2\n";
+	my($sql_1)		= 'insert into subcountry_types '
+						. '(fc_name, name) '
+									. 'values (?, ?)';
+	my($sth_1)		= $self -> dbh -> prepare($sql_1) || die "Unable to prepare SQL: $sql_1\n";
+	my($sql_2)		= 'update countries set has_subcountries = ? where id = ?';
+	my($sth_2)		= $self -> dbh -> prepare($sql_2) || die "Unable to prepare SQL: $sql_2\n";
 
+	my($alpha_2);
 	my($country_id);
-	my($subcountry, $sequence, %seen);
+	my(%subcountry, $suffix);
 
-	for my $element (@$table)
+	for my $item (@$table)
 	{
-		next if (scalar @{$$element{subcountries} } == 0);
+		($alpha_2, $suffix)			= ($1, $2) if ($$item{code} =~ /(..)-(.+)/);
+		$country_id					= $$code2index{$alpha_2};
+		$subcountry{$country_id}	= [] if (! $subcountry{$country_id});
 
-		$has_subcountries_count++;
-
-		$sequence = 0;
-
-		for $subcountry (@{$$element{subcountries} })
-		{
-			$i++;
-			$sequence++;
-
-			$country_id = $$code2index{$$element{code2} };
-
-			$sth_1 -> execute
-			(
-				$country_id,
-				$subcountry,
-				$sequence
-			);
-		}
-
-		# We can use $country_id because it has the same value every time thru the loop above.
-
-		$sth_2 -> execute('Yes', $country_id);
-
-		if ($seen{$country_id})
-		{
-			$self -> log(warning => "Seeing country_id $country_id for the 2nd time");
-		}
-
-		$seen{$country_id} = 1;
+		push @{$subcountry{$country_id} }, $item
 	}
 
 	$sth_1 -> finish;
