@@ -6,10 +6,10 @@ use strict;
 use warnings;
 use warnings  qw(FATAL utf8);    # Fatalize encoding glitches.
 
-use File::Slurper qw/read_dir read_text/;
+use File::Slurper qw/read_binary/;
+use File::Spec;
 
-use List::AllUtils qw/first max/;
-use List::Compare;
+use JSON;
 
 use Moo;
 
@@ -31,14 +31,20 @@ our $VERSION = '1.00';
 
 sub populate_countries
 {
-	my($self)	= @_;
-	my($codes)	= $self -> _parse_country_page_1;
+	my($self)		= @_;
+	(my $package	= __PACKAGE__) =~ s/::/-/g;
+	my($dir_name)	= $ENV{AUTHOR_TESTING} ? 'share' : File::ShareDir::dist_dir($package);
+	my($app_name)	= 'Locale-ISO-3166';
+	my($json_name)	= 'iso_3166-1.json';
+	my($path)		= File::Spec -> catfile($dir_name, $json_name);
+	my($json)		= read_binary($path);
+	$json			= decode_json($json);
 
-	$self -> check_downloads($codes);
+	say $json;
 
-	my($code2index)			= $self -> _save_countries($codes);
-	my($names)				= $self -> _parse_country_page_2;
-	my($subcountry_count)	= $self -> _save_subcountry_info($code2index, $names);
+#	my($code2index)			= $self -> _save_countries($codes);
+#	my($names)				= $self -> _parse_country_page_2;
+#	my($subcountry_count)	= $self -> _save_subcountry_info($code2index, $names);
 
 	# Return 0 for success and 1 for failure.
 
@@ -341,14 +347,6 @@ Specifies the code2 of the country whose subcountry page is to be downloaded.
 
 This module is a sub-class of L<WWW::Scraper::Wikipedia::ISO3166::Database> and consequently
 inherits its methods.
-
-=head2 check_downloads()
-
-Report what country code files have not been downloaded, after parsing ISO_3166-1.html. This report
-is at the 'debug' level.
-
-Also, report if any files are found in the data/ dir whose code does not appear in ISO_3166-1.html.
-This report is at the 'warning' level'.
 
 =head2 code2($code)
 
