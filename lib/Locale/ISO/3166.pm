@@ -46,7 +46,7 @@ has minlevel =>
 
 has sqlite_file =>
 (
-	default  => sub{return 'locale-iso-3166.sqlite'},
+	default  => sub{return 'locale.iso.3166.sqlite'},
 	is       => 'rw',
 	isa      => Str,
 	required => 0,

@@ -133,7 +133,6 @@ sub get_statistics
 		has_subcounties             => $#{$self -> who_has_subcountries} + 1,
 		subcountries_in_db          => $self -> get_subcountry_count,
 		subcountry_categories_in_db => $self -> get_subcountry_category_count,
-		subcountry_files_downloaded => scalar @{$self -> find_subcountry_downloads},
 		subcountry_info_in_db		=> $self -> get_subcountry_info_count,
 	};
 
