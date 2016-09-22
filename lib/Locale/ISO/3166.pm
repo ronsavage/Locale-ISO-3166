@@ -14,7 +14,7 @@ use Types::Standard qw/Any ArrayRef Bool Int HashRef Str/;
 
 has config_file =>
 (
-	default  => sub{return '.htwww.scraper.wikipedia.iso3166.conf'},
+	default  => sub{return '.htlocale-iso-3166.conf'},
 	is       => 'rw',
 	isa      => Str,
 	required => 0,
@@ -46,7 +46,7 @@ has minlevel =>
 
 has sqlite_file =>
 (
-	default  => sub{return 'www.scraper.wikipedia.iso3166.sqlite'},
+	default  => sub{return 'locale-iso-3166.sqlite'},
 	is       => 'rw',
 	isa      => Str,
 	required => 0,

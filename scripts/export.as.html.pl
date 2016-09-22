@@ -7,7 +7,7 @@ use open      qw(:std :utf8);    # Undeclared streams in UTF-8.
 
 use Getopt::Long;
 
-use WWW::Scraper::Wikipedia::ISO3166::Database::Export;
+use Locale::ISO::3166::Database::Export;
 
 use Pod::Usage;
 
@@ -27,7 +27,7 @@ if ($option_parser -> getoptions
 {
 	pod2usage(1) if ($option{'help'});
 
-	exit WWW::Scraper::Wikipedia::ISO3166::Database::Export -> new(%option) -> as_html;
+	exit Locale::ISO::3166::Database::Export -> new(%option) -> as_html;
 }
 else
 {
@@ -55,7 +55,7 @@ All switches can be reduced to a single letter.
 
 Exit value: 0.
 
-Default input: share/www.scraper.wikipedia.iso3166.sqlite.
+Default input: share/locale.iso.3166.sqlite.
 
 Default output: Screen.
 

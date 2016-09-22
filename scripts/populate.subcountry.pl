@@ -7,7 +7,7 @@ use open      qw(:std :utf8);    # Undeclared streams in UTF-8.
 
 use Getopt::Long;
 
-use WWW::Scraper::Wikipedia::ISO3166::Database::Import;
+use Locale::ISO::3166::Database::Import;
 
 use Pod::Usage;
 
@@ -27,7 +27,7 @@ if ($option_parser -> getoptions
 {
 	pod2usage(1) if ($option{'help'});
 
-	exit WWW::Scraper::Wikipedia::ISO3166::Database::Import -> new(%option) -> populate_subcountry;
+	exit Locale::ISO::3166::Database::Import -> new(%option) -> populate_subcountry;
 }
 else
 {

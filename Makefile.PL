@@ -17,7 +17,6 @@ license 'perl';
 resources
 repository => 'https://github.com/ronsavage/Locale-ISO-3166.git';
 
-requires 'Config::Tiny'					=> 2.14;
 requires 'DBD::SQLite'					=> 1.50;
 requires 'DBI'							=> 1.620;
 requires 'DBIx::Admin::CreateTable'		=> 2.07;
@@ -26,7 +25,6 @@ requires 'File::Slurper'				=> 0.008;
 requires 'File::Spec'					=> 3.33;
 requires 'Getopt::Long'					=> 2.38;
 requires 'Log::Handler'					=> 0.84;
-requires 'Mojo::DOM'					=> 0; # This is just for my Makefile.PL cross-checker.
 requires 'Moo'							=> 2.001001;
 requires 'open'							=> 1.08;
 requires 'parent'						=> 0.225;
