@@ -1,0 +1,6 @@
+Revision history for Perl extension Locale::ISO::3166.
+
+1.00  2016-09-22T11:18:00
+	  - Initial release.
+	  - The module replaces WWW::Scraper::Wikipedia::ISO3166 by getting its data from a github repo.
+			See https://pkg-isocodes.alioth.debian.org/.
