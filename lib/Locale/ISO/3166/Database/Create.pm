@@ -43,14 +43,16 @@ sub create_countries_table
 	my($result)      = $self -> creator -> create_table(<<SQL);
 create table $table_name
 (
-id $primary_key,
-code2 char(2) not null,
-code3 char(3) not null,
-fc_name varchar(255) not null,
-has_subcountries varchar(3) not null,
-name varchar(255) not null,
-number char(3) not null,
-timestamp timestamp $time_option not null default current_timestamp
+id					$primary_key,
+alpha_2				char(2) not null,
+alpha_3				char(3) not null,
+fc_official_name	varchar(255) not null,
+fc_name				varchar(255) not null,
+has_subcountries	varchar(3) not null,
+name				varchar(255) not null,
+numeric				char(3) not null,
+official_name		varchar(255) not null,
+timestamp			timestamp $time_option not null default current_timestamp
 ) $engine
 SQL
 	$self -> report($table_name, 'created', $result);

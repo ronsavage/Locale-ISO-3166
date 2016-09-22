@@ -1,10 +1,11 @@
 package Locale::ISO::3166::Database::Import;
 
 use parent 'Locale::ISO::3166::Database';
-use feature 'say';
 use strict;
 use warnings;
 use warnings  qw(FATAL utf8);    # Fatalize encoding glitches.
+
+use Data::Dumper::Concise; # For Dumper().
 
 use File::Slurper qw/read_binary/;
 use File::Spec;
@@ -38,11 +39,19 @@ sub populate_countries
 	my($json_name)	= 'iso_3166-1.json';
 	my($path)		= File::Spec -> catfile($dir_name, $json_name);
 	my($json)		= read_binary($path);
-	$json			= decode_json($json);
+	$json			= decode_json($json);	# Hashref.
+	$json			= $$json{'3166-1'};		# Arrayref.
 
-	say $json;
+	my(@codes);
 
-#	my($code2index)			= $self -> _save_countries($codes);
+	for my $item (@$json)
+	{
+		$$item{official_name} = defined($$item{official_name}) ? $$item{official_name} : $$item{name};
+
+		push @codes, $item;
+	}
+
+	my($code2index)			= $self -> _save_countries(\@codes);
 #	my($names)				= $self -> _parse_country_page_2;
 #	my($subcountry_count)	= $self -> _save_subcountry_info($code2index, $names);
 
@@ -132,8 +141,8 @@ sub _save_countries
 
 	my($i)   = 0;
 	my($sql) = 'insert into countries '
-				. '(code2, code3, fc_name, has_subcountries, name, number) '
-				. 'values (?, ?, ?, ?, ?, ?)';
+				. '(alpha_2, alpha_3, fc_official_name, fc_name, has_subcountries, name, numeric, official_name) '
+				. 'values (?, ?, ?, ?, ?, ?, ?, ?)';
 	my($sth) = $self -> dbh -> prepare($sql) || die "Unable to prepare SQL: $sql\n";
 
 	my(%code2index);
@@ -142,16 +151,18 @@ sub _save_countries
 	{
 		$i++;
 
-		$code2index{$$element{code2} } = $i;
+		$code2index{$$element{alpha_2} } = $i;
 
 		$sth -> execute
 		(
-			$$element{code2},
-			$$element{code3},
+			$$element{alpha_2},
+			$$element{alpha_3},
 			fc $$element{name},
+			fc $$element{official_name},
 			'No', # The default for 'has_subcountries'. Updated later.
 			$$element{name},
-			$$element{number},
+			$$element{numeric},
+			$$element{official_name},
 		);
 	}
 
