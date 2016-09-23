@@ -25,7 +25,7 @@ subcountries_in_db => 4847
 subcountry_types_in_db => 92
 EOS
 
-is(\@got, \@expected, 'report_statistics() returned the expected data');
+is(@got, @expected, 'report_statistics() returned the expected data');
 
 @params = ();
 
@@ -45,6 +45,6 @@ AU-VIC: Victoria
 AU-WA: Western Australia
 EOS
 
-is(\@got, \@expected, 'report_Australian_statistics() returned the expected data');
+is(@got, @expected, 'report_Australian_statistics() returned the expected data');
 
 done_testing;
