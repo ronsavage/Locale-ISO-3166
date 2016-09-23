@@ -5,7 +5,7 @@ perl -Ilib scripts/create.tables.pl
 
 echo Run populate.countries.pl
 
-perl -Ilib scripts/populate.countries.pl -maxlevel debug
+perl -Ilib scripts/populate.countries.pl -maxlevel info
 
 #echo Run populate.subcountries.pl
 

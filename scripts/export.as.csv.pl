@@ -22,7 +22,6 @@ if ($option_parser -> getoptions
 	\%option,
 	'help',
 	'countries_file=s',
-	'maxlevel=s',
 	'subcountries_file=s',
 	'subcountry_categories_file=s',
 	'subcountry_info_file=s',
@@ -52,7 +51,6 @@ export.as.html.pl [options]
 	Options:
 	-help
 	-countries_file $aCSVFileName
-	-maxlevel $string
 	-subcountries_file $aCSVFileName
 	-subcountry_categories_file $aCSVFileName
 	-subcountry_info_file $aCSVFileName
@@ -78,12 +76,6 @@ Default: countries.csv
 =item o -help
 
 Print help and exit.
-
-=item -maxlevel => $string
-
-Typical values: 'debug'.
-
-Default: 'notice'.
 
 =item o -subcountries_file $aCSVFileName
 

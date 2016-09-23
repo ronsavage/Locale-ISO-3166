@@ -28,7 +28,7 @@ our $VERSION = '1.00';
 
 # -----------------------------------------------
 
-sub populate_countries
+sub populate
 {
 	my($self)		= @_;
 	(my $package	= __PACKAGE__) =~ s/::/-/g;
@@ -72,7 +72,7 @@ sub populate_countries
 
 	return 0;
 
-} # End of populate_countries.
+} # End of populate.
 
 # -----------------------------------------------
 

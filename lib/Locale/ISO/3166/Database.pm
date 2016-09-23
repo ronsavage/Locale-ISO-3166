@@ -226,7 +226,7 @@ sub report_Australian_statistics
 
 	@states = sort{$$a{code} cmp $$b{code} } @states;
 
-	$self -> log(info => "$$_{code}: $$_{name}") for @states;
+	print "$$_{code}: $$_{name}.\n" for @states;
 
 	# Return 0 for success and 1 for failure.
 
@@ -241,7 +241,7 @@ sub report_statistics
 	my($self)  = @_;
 	my($count) = $self -> get_statistics;
 
-	$self -> log(info => $_) for map{"$_ => $$count{$_}"} sort keys %$count;
+	print "$_.\n" for map{"$_ => $$count{$_}"} sort keys %$count;
 
 	# Return 0 for success and 1 for failure.
 

@@ -26,7 +26,7 @@ if ($option_parser -> getoptions
 {
 	pod2usage(1) if ($option{'help'});
 
-	exit Locale::ISO::3166::Database::Import -> new(%option) -> populate_countries;
+	exit Locale::ISO::3166::Database::Import -> new(%option) -> populate;
 }
 else
 {

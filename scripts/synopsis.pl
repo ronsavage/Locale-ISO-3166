@@ -3,11 +3,8 @@
 use strict;
 use warnings;
 
-use Locale::ISO::3166;
+use Locale::ISO::3166::Database;
 
-# --------------------------
+# ------------------------------
 
-my($iso3166) = Locale::ISO::3166 -> new;
-
-$iso3166 -> run;
-
+Locale::ISO::3166::Database -> new -> report_statistics;

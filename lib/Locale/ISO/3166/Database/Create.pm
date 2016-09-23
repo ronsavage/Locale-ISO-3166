@@ -141,11 +141,11 @@ sub report
 
 	if ($result)
 	{
-		die "Table '$table_name' $result\n";
+		die "Table '$table_name' $result. \n";
 	}
 	else
 	{
-		$self -> log(debug => "Table '$table_name' $message");
+		print "Table '$table_name' $message. \n";
 	}
 
 } # End of report.

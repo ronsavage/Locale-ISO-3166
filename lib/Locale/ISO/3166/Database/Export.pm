@@ -49,17 +49,9 @@ has subcountries_file =>
 	required => 0,
 );
 
-has subcountry_categories_file =>
+has subcountry_types_file =>
 (
-	default  => sub{return 'subcountry_categories.csv'},
-	is       => 'rw',
-	isa      => Str,
-	required => 0,
-);
-
-has subcountry_info_file =>
-(
-	default  => sub{return 'subcountry_info.csv'},
+	default  => sub{return 'subcountry_types.csv'},
 	is       => 'rw',
 	isa      => Str,
 	required => 0,
@@ -75,7 +67,7 @@ has templater =>
 
 has web_page_file =>
 (
-	default  => sub{return 'iso.3166-2.html'},
+	default  => sub{return 'locale_iso_3166.html'},
 	is       => 'rw',
 	isa      => Str,
 	required => 0,
@@ -114,14 +106,13 @@ sub as_csv
 {
 	my($self) = @_;
 
-	die "No countries_file name specified\n"						if (! $self -> countries_file);
-	die "No subcountry_categories_file name specified\n"			if (! $self -> subcountry_categories_file);
-	die "No subcountry_info_file name specified\n"					if (! $self -> subcountry_info_file);
-	die "No subcountries_file name specified\n"						if (! $self -> subcountries_file);
+	die "No countries_file name specified\n"				if (! $self -> countries_file);
+	die "No subcountry_types_file name specified\n"			if (! $self -> subcountry_types_file);
+	die "No subcountries_file name specified\n"				if (! $self -> subcountries_file);
 
 	my(%seen);
 
-	for (qw/countries_file subcountry_categories_file subcountry_info_file subcountries_file/)
+	for (qw/countries_file subcountry_types_file subcountries_file/)
 	{
 		die "Same file name used for $_ and $seen{$_}\n" if ($seen{$_});
 
@@ -163,37 +154,6 @@ sub as_csv
 
 	close $fh;
 
-	# 2: Subcountry info.
-
-	my($subcountry_info)	= $self -> read_subcountry_info_table;
-	@row              		= ();
-
-	push @row,
-	[
-		qw/id country_id name sequence timestamp/
-	];
-
-	for my $id (nsort(keys %$subcountry_info) )
-	{
-		push @row,
-		[
-			$id,
-			$$subcountry_info{$id}{country_id},
-			$$subcountry_info{$id}{name},
-			$$subcountry_info{$id}{sequence},
-			$$subcountry_info{$id}{timestamp},
-		];
-	}
-
-	open($fh, '>:encoding(UTF-8)', $self -> subcountry_info_file) || die "Can't open file: " . $self -> subcountry_info_file . "\n";
-
-	for (@row)
-	{
-		print $fh '"', join('","', @$_), '"', "\n";
-	}
-
-	close $fh;
-
 	# 3: Subcountries.
 
 	my($subcountries)	= $self -> read_subcountries_table;
@@ -227,25 +187,25 @@ sub as_csv
 
 	# 4: Subcountry types.
 
-	my($categories)	= $self -> read_subcountry_categories_table;
-	@row			= ();
+	my($types)	= $self -> read_subcountry_types_table;
+	@row		= ();
 
 	push @row,
 	[
 		qw/id name timestamp/
 	];
 
-	for my $id (sort{$$categories{$a}{name} cmp $$categories{$b}{name} } keys %$categories)
+	for my $id (sort{$$types{$a}{name} cmp $$types{$b}{name} } keys %$types)
 	{
 		push @row,
 		[
 			$id,
-			$$categories{$id}{name},
-			$$categories{$id}{timestamp},
+			$$types{$id}{name},
+			$$types{$id}{timestamp},
 		];
 	}
 
-	open($fh, '>:encoding(UTF-8)', $self -> subcountry_categories_file) || die "Can't open file: " . $self -> subcountry_categories_file . "\n";
+	open($fh, '>:encoding(UTF-8)', $self -> subcountry_types_file) || die "Can't open file: " . $self -> subcountry_types_file . "\n";
 
 	for (@row)
 	{
@@ -289,15 +249,16 @@ sub _build_country_data
 	my($self)			= @_;
 	my($countries)		= $self -> read_countries_table;
 	my($subcountries)	= $self -> read_subcountries_table;
-	my($categories)		= $self -> read_subcountry_categories_table;
+	my($types)			= $self -> read_subcountry_types_table;
 
-	my($country_id, $category_id);
+	my($country_id)
 	my(%subcountries);
+	my($type_id);
 
 	for my $sub_id (keys %$subcountries)
 	{
 		$country_id					= $$subcountries{$sub_id}{country_id};
-		$category_id				= $$subcountries{$sub_id}{subcountry_category_id};
+		$type_id					= $$subcountries{$sub_id}{subcountry_type_id};
 		$subcountries{$country_id}	= [] if (! $subcountries{$country_id});
 
 		push @{$subcountries{$country_id} },
@@ -305,7 +266,7 @@ sub _build_country_data
 			$$subcountries{$sub_id}{sequence}, # Sort key, below.
 			$$subcountries{$sub_id}{code},
 			$$subcountries{$sub_id}{name},
-			$$categories{$category_id}{name},
+			$$types{$type_id}{name},
 		];
 	}
 

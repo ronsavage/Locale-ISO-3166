@@ -21,7 +21,6 @@ if ($option_parser -> getoptions
 (
 	\%option,
 	'help',
-	'maxlevel=s',
 ) )
 {
 	pod2usage(1) if ($option{'help'});
@@ -47,7 +46,6 @@ report.statistics.pl [options]
 
 	Options:
 	-help
-	-maxlevel $string
 
 All switches can be reduced to a single letter.
 
@@ -64,12 +62,6 @@ Default output: Screen.
 =item -help
 
 Print help and exit.
-
-=item -maxlevel => $string
-
-Typical values: 'debug'.
-
-Default: 'notice'.
 
 =back
 

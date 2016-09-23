@@ -27,7 +27,6 @@ requires 'File::Slurper'				=> 0.008;
 requires 'File::Spec'					=> 3.33;
 requires 'Getopt::Long'					=> 2.38;
 requires 'JSON'							=> 2.90,
-requires 'Log::Handler'					=> 0.84;
 requires 'Moo'							=> 2.001001;
 requires 'open'							=> 0;
 requires 'parent'						=> 0.234;

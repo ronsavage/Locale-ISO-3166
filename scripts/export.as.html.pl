@@ -21,7 +21,6 @@ if ($option_parser -> getoptions
 (
 	\%option,
 	'help',
-	'maxlevel=s',
 	'web_page_file=s',
 ) )
 {
@@ -48,7 +47,6 @@ export.as.html.pl [options]
 
 	Options:
 	-help
-	-maxlevel $string
 	-web_page_file $aFileName
 
 All switches can be reduced to a single letter.
@@ -66,12 +64,6 @@ Default output: Screen.
 =item o -help
 
 Print help and exit.
-
-=item -maxlevel => $string
-
-Typical values: 'debug'.
-
-Default: 'notice'.
 
 =item o -web_page_file $aFileName
 
