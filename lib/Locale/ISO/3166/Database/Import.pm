@@ -225,18 +225,18 @@ sub _save_subcountry_info
 
 =head1 NAME
 
-WWW::Scraper::Wikipedia::ISO3166::Database::Import - Part of the interface to www.scraper.wikipedia.iso3166.sqlite
+Locale::ISO::3166::Database::Import - Part of the interface to www.scraper.wikipedia.iso3166.sqlite
 
 =head1 Synopsis
 
-See L<WWW::Scraper::Wikipedia::ISO3166/Synopsis>.
+See L<Locale::ISO::3166/Synopsis>.
 
 =head1 Description
 
 Documents the methods used to populate the SQLite database,
 I<www.scraper.wikipedia.iso3166.sqlite>, which ships with this distro.
 
-See L<WWW::Scraper::Wikipedia::ISO3166/Description> for a long description.
+See L<Locale::ISO::3166/Description> for a long description.
 
 =head1 Distributions
 
@@ -249,11 +249,11 @@ help on unpacking and installing.
 
 =head1 Constructor and initialization
 
-new(...) returns an object of type C<WWW::Scraper::Wikipedia::ISO3166::Database::Import>.
+new(...) returns an object of type C<Locale::ISO::3166::Database::Import>.
 
 This is the class's contructor.
 
-Usage: C<< WWW::Scraper::Wikipedia::ISO3166::Database::Import -> new() >>.
+Usage: C<< Locale::ISO::3166::Database::Import -> new() >>.
 
 This method takes a hash of options.
 
@@ -271,7 +271,7 @@ Specifies the code2 of the country whose subcountry page is to be downloaded.
 
 =head1 Methods
 
-This module is a sub-class of L<WWW::Scraper::Wikipedia::ISO3166::Database> and consequently
+This module is a sub-class of L<Locale::ISO::3166::Database> and consequently
 inherits its methods.
 
 =head2 code2($code)
@@ -297,22 +297,21 @@ this method.
 
 =head1 FAQ
 
-For the database schema, etc, see L<WWW::Scraper::Wikipedia::ISO3166/FAQ>.
+For the database schema, etc, see L<Locale::ISO::3166/FAQ>.
 
 =head1 References
 
-See L<WWW::Scraper::Wikipedia::ISO3166/References>.
+See L<Locale::ISO::3166/References>.
 
 =head1 Support
 
 Email the author, or log a bug on RT:
 
-L<https://rt.cpan.org/Public/Dist/Display.html?Name=WWW::Scraper::Wikipedia::ISO3166>.
+L<https://rt.cpan.org/Public/Dist/Display.html?Name=Locale::ISO::3166>.
 
 =head1 Author
 
-C<WWW::Scraper::Wikipedia::ISO3166> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>> in
-2012.
+C<Locale::ISO::3166> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>> in 2016.
 
 Home page: L<http://savage.net.au/index.html>.
 
@@ -322,7 +321,7 @@ Australian copyright (c) 2012 Ron Savage.
 
 	All Programs of mine are 'OSI Certified Open Source Software';
 	you can redistribute them and/or modify them under the terms of
-	The Artistic License, a copy of which is available at:
+	The Perl License, a copy of which is available at:
 	http://www.opensource.org/licenses/index.html
 
 

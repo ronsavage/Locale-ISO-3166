@@ -181,18 +181,6 @@ sub read_subcountries_table
 
 } # End of read_subcountries_table.
 
-# ----------------------------------------------
-
-sub read_subcountry_info_table
-{
-	my($self) = @_;
-	my($sth)  = $self -> dbh -> prepare('select * from subcountry_info');
-
-	$sth -> execute;
-	$sth -> fetchall_hashref('id');
-
-} # End of read_subcountry_info_table.
-
 # -----------------------------------------------
 
 sub report_Australian_statistics
@@ -275,68 +263,79 @@ sub who_has_subcountries
 
 =head1 NAME
 
-WWW::Scraper::Wikipedia::ISO3166::Database - The interface to www.scraper.wikipedia.iso3166.sqlite
+Locale::ISO::3166::Database - The interface to local.iso.3166.sqlite
 
 =head1 Synopsis
 
-See L<WWW::Scraper::Wikipedia::ISO3166/Synopsis> for a long synopsis.
+See L<Locale::ISO::3166/Synopsis>.
 
 =head1 Description
 
 Documents the methods end-users need to access the SQLite database,
-I<www.scraper.wikipedia.iso3166.sqlite>, which ships with this distro.
+I<local.iso.3166.sqlite>, which ships with this distro.
 
-See L<WWW::Scraper::Wikipedia::ISO3166/Description> for a long description.
+See L<Locale::ISO::3166/Description>.
 
 See scripts/export.as.csv.pl, scripts/export.as.html.pl and scripts/report.statistics.pl.
 
-=head1 Distributions
+See L<the demo page|...> for an exported version of the database.
 
-This module is available as a Unix-style distro (*.tgz).
-
-See http://savage.net.au/Perl-modules.html for details.
-
-See http://savage.net.au/Perl-modules/html/installing-a-module.html for
-help on unpacking and installing.
+See also data/*.csv for the exported files, 1 per table.
 
 =head1 Constructor and initialization
 
-new(...) returns an object of type C<WWW::Scraper::Wikipedia::ISO3166::Database>.
+new(...) returns an object of type C<Locale::ISO::3166::Database>.
 
 This is the class's contructor.
 
-Usage: C<< WWW::Scraper::Wikipedia::ISO3166::Database -> new() >>.
+Usage: C<< Locale::ISO::3166::Database -> new() >>.
 
 This method takes a hash of options.
 
 Call C<new()> as C<< new(option_1 => value_1, option_2 => value_2, ...) >>.
 
-Available options:
+Key-value pairs accepted in the parameter list (see corresponding methods for details
+[e.g. L</attributes([$hashref])>]):
 
 =over 4
 
-=item o attributes => $hash_ref
+=item o attributes => $a_hash_ref
 
-This is the hashref of attributes passed to L<DBI>'s I<connect()> method.
+Sets the hashref of options passed as the 4th parameter to L<DBI>'s C<connect()> method.
 
-Default: {AutoCommit => 1, RaiseError => 1, sqlite_unicode => 1}
+Default: {AutoCommit => 1, RaiseError => 1, sqlite_unicode => 1}.
+
+=item o dsn => $string
+
+Sets the DSN passed as the 1st parameter to L<DBI>'s C<connect()> method.
+
+Default: 'dbi:SQLite:dbname=' . The value returned by sqlite_file().
+See L<Locale::ISO::3166/sqlite_file([$string])> for details.
+
+=item o password => $string
+
+Sets the password passed as the 3rd parameter to L<DBI>'s C<connect()> method.
+
+Default: '' (the empty string).
+
+=item o username => $string
+
+Sets the username passed as the 2nd parameter to L<DBI>'s C<connect()> method.
+
+Default: '' (the empty string).
 
 =back
 
 =head1 Methods
 
-This module is a sub-class of L<WWW::Scraper::Wikipedia::ISO3166> and consequently inherits its methods.
+This module is a sub-class of L<Locale::ISO::3166> and consequently inherits its methods, while
+adding these.
 
 =head2 attributes($hashref)
 
 Get or set the hashref of attributes passes to L<DBI>'s I<connect()> method.
 
 Also, I<attributes> is an option to L</new()>.
-
-=head2 find_subcountry_downloads()
-
-Returns an arrayref of 2-letter codes of countries whose subcountry page has been downloaded to
-data/*$code2.html.
 
 =head2 get_country_count()
 
@@ -347,12 +346,10 @@ Returns the result of: 'select count(*) from countries'.
 Returns a hashref of database statistics:
 
 	{
-	countries_in_db             => 249,
-	has_subcounties             => 200,
-	subcountries_in_db          => 5297,
-	subcountry_cagegories_in_db => 77,
-	subcountry_files_downloaded => 249,
-	subcountry_info_in_db       => 352,
+	    countries_in_db        => 249,
+	    has_subcounties        => 198,
+	    subcountries_in_db     => 4847,
+	    subcountry_types_in_db => 92,
 	}
 
 Called by L</report_statistics()>.
@@ -361,13 +358,9 @@ Called by L</report_statistics()>.
 
 Returns the result of: 'select count(*) from subcountries'.
 
-=head2 get_subcountry_category_count()
+=head2 get_subcountry_type_count()
 
-Returns the result of: 'select count(*) from subcountry_categories'.
-
-=head2 get_subcountry_info_count()
-
-Returns the result of: 'select count(*) from subcountry_info'.
+Returns the result of: 'select count(*) from subcountry_types'.
 
 =head2 new()
 
@@ -379,7 +372,7 @@ Returns a hashref of hashrefs for this SQL: 'select * from countries'.
 
 The key of the hashref is the primary key (integer) of the I<countries> table.
 
-This is discussed further in L<WWW::Scraper::Wikipedia::ISO3166/Methods which return hashrefs>.
+This is discussed further in L<Locale::ISO::3166/Methods which return hashrefs>.
 
 =head2 read_subcountries_table
 
@@ -387,15 +380,15 @@ Returns a hashref of hashrefs for this SQL: 'select * from subcountries'.
 
 The key of the hashref is the primary key (integer) of the I<subcountries> table.
 
-This is discussed further in L<WWW::Scraper::Wikipedia::ISO3166/Methods which return hashrefs>.
+This is discussed further in L<Locale::ISO::3166/Methods which return hashrefs>.
 
 =head2 report_Australian_statistics
 
-Logs some info for Australia. Does not call L</report_statistics()>.
+Prints some info for Australia. Does not call L</report_statistics()>.
 
 =head2 report_statistics()
 
-Logs various database statistics at the I<info> level.
+Prints various database statistics at the I<info> level.
 
 Calls L</get_statistics()>. See that module for what this module reports.
 
@@ -406,21 +399,17 @@ subcountry entries in the I<subcountries> table.
 
 =head1 FAQ
 
-For the database schema, etc, see L<WWW::Scraper::Wikipedia::ISO3166/FAQ>.
-
-=head1 References
-
-See L<WWW::Scraper::Wikipedia::ISO3166/References>.
+For the database schema, etc, see L<Locale::ISO::3166/FAQ>.
 
 =head1 Support
 
 Email the author, or log a bug on RT:
 
-L<https://rt.cpan.org/Public/Dist/Display.html?Name=WWW::Scraper::Wikipedia::ISO3166>.
+L<https://rt.cpan.org/Public/Dist/Display.html?Name=Locale::ISO::3166>.
 
 =head1 Author
 
-C<WWW::Scraper::Wikipedia::ISO3166> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>> in 2012.
+C<Locale::ISO::3166> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>> in 2016.
 
 Home page: L<http://savage.net.au/index.html>.
 
@@ -430,7 +419,7 @@ Australian copyright (c) 2012 Ron Savage.
 
 	All Programs of mine are 'OSI Certified Open Source Software';
 	you can redistribute them and/or modify them under the terms of
-	The Artistic License, a copy of which is available at:
+	The Perl License, a copy of which is available at:
 	http://www.opensource.org/licenses/index.html
 
 

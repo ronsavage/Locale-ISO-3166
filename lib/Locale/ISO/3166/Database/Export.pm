@@ -324,11 +324,11 @@ sub _build_country_data
 
 =head1 NAME
 
-WWW::Scraper::Wikipedia::ISO3166::Database::Export - Export www.scraper.wikipedia.iso3166.sqlite as CSV and HTML
+Locale::ISO::3166::Database::Export - Export www.scraper.wikipedia.iso3166.sqlite as CSV and HTML
 
 =head1 Synopsis
 
-See L<WWW::Scraper::Wikipedia::ISO3166/Synopsis>.
+See L<Locale::ISO::3166/Synopsis>.
 
 =head1 Description
 
@@ -371,11 +371,11 @@ help on unpacking and installing.
 
 =head1 Constructor and initialization
 
-new(...) returns an object of type C<WWW::Scraper::Wikipedia::ISO3166::Database::Export>.
+new(...) returns an object of type C<Locale::ISO::3166::Database::Export>.
 
 This is the class's contructor.
 
-Usage: C<< WWW::Scraper::Wikipedia::ISO3166::Database::Export -> new() >>.
+Usage: C<< Locale::ISO::3166::Database::Export -> new() >>.
 
 This method takes a hash of options.
 
@@ -423,7 +423,7 @@ Default: 'iso.3166-2.html'.
 
 =head1 Methods
 
-This module is a sub-class of L<WWW::Scraper::Wikipedia::ISO3166::Database> and consequently
+This module is a sub-class of L<Locale::ISO::3166::Database> and consequently
 inherits its methods.
 
 =head2 as_csv()
@@ -470,21 +470,21 @@ C<web_page_file> is an option to L</new()>.
 
 =head1 FAQ
 
-For the database schema, etc, see L<WWW::Scraper::Wikipedia::ISO3166/FAQ>.
+For the database schema, etc, see L<Locale::ISO::3166/FAQ>.
 
 =head1 References
 
-See L<WWW::Scraper::Wikipedia::ISO3166/References>.
+See L<Locale::ISO::3166/References>.
 
 =head1 Support
 
 Email the author, or log a bug on RT:
 
-L<https://rt.cpan.org/Public/Dist/Display.html?Name=WWW::Scraper::Wikipedia::ISO3166>.
+L<https://rt.cpan.org/Public/Dist/Display.html?Name=Locale::ISO::3166>.
 
 =head1 Author
 
-C<WWW::Scraper::Wikipedia::ISO3166> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>> in 2012.
+C<Locale::ISO::3166> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>> in 2012.
 
 Home page: L<http://savage.net.au/index.html>.
 
