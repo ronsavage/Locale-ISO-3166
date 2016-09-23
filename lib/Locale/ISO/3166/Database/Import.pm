@@ -151,7 +151,6 @@ sub _save_countries
 {
 	my($self, $table) = @_;
 
-	$self -> dbh -> begin_work;
 	$self -> dbh -> do('delete from countries');
 
 	my($i)   = 0;
@@ -182,7 +181,6 @@ sub _save_countries
 	}
 
 	$sth -> finish;
-	$self -> dbh -> commit;
 
 	return \%code2index;
 
@@ -204,19 +202,35 @@ sub _save_subcountry_info
 		($alpha_2, $suffix)			= ($1, $2) if ($$item{code} =~ /(..)-(.+)/);
 		$country_id					= $$code2index{$alpha_2};
 		$subcountry{$country_id}	= [] if (! $subcountry{$country_id});
-		$type{$$item{type} }		= 1;
+		$type{$$item{type} }		= $$item{code};
 
 		push @{$subcountry{$country_id} }, $item
 	}
 
 	$self -> dbh -> do('delete from subcountry_types');
 
+	my($fc_type);
+	my(%seen);
+	my(@word);
+
+	for my $type (keys %type)
+	{
+		@word		= map{ucfirst} split(/\s+/, $type);
+		$type		= join(' ', @word);
+		$fc_type	= fc $type;
+
+		if (! $seen{$fc_type})
+		{
+			$seen{$fc_type} = $type;
+		}
+	}
+
 	my($sql_1)	= 'insert into subcountry_types (fc_name, name) values (?, ?)';
 	my($sth_1)	= $self -> dbh -> prepare($sql_1) || die "Unable to prepare SQL: $sql_1\n";
 
-	for my $type (sort keys %type)
+	for my $type (sort keys %seen)
 	{
-		$sth_1 -> execute(fc($type), $type);
+		$sth_1 -> execute($type, $seen{$type});
 	}
 
 	$sth_1 -> finish;
