@@ -225,89 +225,50 @@ sub _save_subcountry_info
 		}
 	}
 
-	my($sql_1)	= 'insert into subcountry_types (fc_name, name) values (?, ?)';
-	my($sth_1)	= $self -> dbh -> prepare($sql_1) || die "Unable to prepare SQL: $sql_1\n";
+	my($sql_1)					= 'insert into subcountry_types (fc_name, name) values (?, ?)';
+	my($sth_1)					= $self -> dbh -> prepare($sql_1) || die "Unable to prepare SQL: $sql_1\n";
+	my($subcountry_type_id)		= 0;
 
-	for my $type (sort keys %seen)
+	my(%type_id);
+
+	for $fc_type (sort keys %seen)
 	{
-		$sth_1 -> execute($type, $seen{$type});
+		$type_id{$fc_type} = ++$subcountry_type_id;
+
+		$sth_1 -> execute($fc_type, $seen{$fc_type});
 	}
 
 	$sth_1 -> finish;
 
+	my($sql_2)	= 'insert into subcountries (country_id, subcountry_type_id, code, fc_name, name) values (?, ?, ?, ?, ?)';
+	my($sth_2)	= $self -> dbh -> prepare($sql_2) || die "Unable to prepare SQL: $sql_1\n";
+	my($sql_3)	= 'update countries set has_subcountries = ? where id = ?';
+	my($sth_3)	= $self -> dbh -> prepare($sql_3) || die "Unable to prepare SQL: $sql_2\n";
 
-#	my($sql_2)		= 'update countries set has_subcountries = ? where id = ?';
-#	my($sth_2)		= $self -> dbh -> prepare($sql_2) || die "Unable to prepare SQL: $sql_2\n";
-#	$sth_2 -> finish;
+	my(%country_id);
 
-} # End of _save_subcountry_info.
-
-# ----------------------------------------------
-
-sub _save_subcountry
-{
-	my($self, $count, $table)	= @_;
-	my($code2)					= $self -> code2;
-	my($countries)				= $self -> read_countries_table;
-
-	# Find which country has the code we're processing.
-
-	my($country_id) = first {$$countries{$_}{code2} eq $code2} keys %$countries;
-
-	die "Unknown country code: $code2\n" if (! $country_id);
-
-	my($categories)			= $self -> read_subcountry_categories_table;
-	my($max_category_id)	= max (keys %$categories);
-
-	$self -> dbh -> do("delete from subcountries where country_id = $country_id");
-
-	my($i)   = 0;
-	my($sql) = 'insert into subcountries (country_id, subcountry_category_id, code, fc_name, name, sequence) values (?, ?, ?, ?, ?, ?)';
-	my($sth) = $self -> dbh -> prepare($sql) || die "Unable to prepare SQL: $sql\n";
-
-	my($category_id);
-	my($element);
-
-	for my $key (sort{$$table{$a}{code} cmp $$table{$b}{code} } keys %$table)
+	for $country_id (sort keys %subcountry)
 	{
-		$i++;
+		my(@subcountries) = @{$subcountry{$country_id} };
 
-		$category_id	= 0;
-		$element		= $$table{$key};
-
-		for my $id (keys %$categories)
+		if ($#subcountries >= 0)
 		{
-			if ($$element{category} eq $$categories{$id}{name})
-			{
-				$category_id = $id;
-
-				last;
-			}
+			$sth_3 -> execute('Yes', $country_id);
 		}
 
-		if ($category_id == 0)
+		for my $item (@subcountries)
 		{
-			$max_category_id++;
+			$fc_type					= fc $$item{type};
+			$subcountry_type_id			= $type_id{$fc_type};
 
-			# Note: The 2nd assignment is for the benefit of the 'if' in the previous loop,
-			# at a later point in time.
-
-			$category_id						= $max_category_id;
-			$$categories{$category_id}{name}	= $$element{category};
-			my($sql_2)							= 'insert into subcountry_categories (id, name) values (?, ?)';
-			my($sth_2)							= $self -> dbh -> prepare($sql_2) || die "Unable to prepare SQL: $sql_2\n";
-
-			$sth_2 -> execute($category_id, $$element{category});
+			$sth_2 -> execute($country_id, $subcountry_type_id, $$item{code}, fc $$item{name}, $$item{name});
 		}
-
-		$sth -> execute($country_id, $category_id, $$element{code}, fc $$element{name}, $$element{name}, $i);
 	}
 
-	$sth -> finish;
+	$sth_2 -> finish;
+	$sth_3 -> finish;
 
-	return $i;
-
-} # End of _save_subcountry.
+} # End of _save_subcountry_info.
 
 # -----------------------------------------------
 
