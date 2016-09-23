@@ -5,8 +5,6 @@ use strict;
 use warnings;
 use warnings  qw(FATAL utf8);    # Fatalize encoding glitches.
 
-use Data::Dumper::Concise; # For Dumper().
-
 use File::Slurper qw/read_binary/;
 use File::Spec;
 
@@ -93,57 +91,6 @@ sub populate_subcountry
 	return 0;
 
 } # End of populate_subcountry.
-
-# -----------------------------------------------
-
-sub populate_subcountries
-{
-	my($self)  = @_;
-
-	# Find which subcountries have been downloaded but not imported.
-	# %downloaded will contain 2-letter codes.
-
-	my(%downloaded);
-
-	my($downloaded)           = $self -> find_subcountry_downloads;
-	@downloaded{@$downloaded} = (1) x @$downloaded;
-	my($countries)            = $self -> read_countries_table;
-	my($subcountries)         = $self -> read_subcountries_table;
-
-	my($country_id);
-	my(%imported);
-
-	for my $subcountry_id (keys %$subcountries)
-	{
-		$country_id                                 = $$subcountries{$subcountry_id}{country_id};
-		$imported{$$countries{$country_id}{code2} } = 1;
-	}
-
-	# 2: Import if not already imported.
-
-	$self -> dbh -> begin_work;
-
-	my($code2);
-
-	for $country_id (sort keys %$countries)
-	{
-		$code2 = $$countries{$country_id}{code2};
-
-		next if ($imported{$code2});
-
-		next if ($$countries{$country_id}{has_subcountries} eq 'No');
-
-		$self -> code2($code2);
-		$self -> populate_subcountry;
-	}
-
-	$self -> dbh -> commit;
-
-	# Return 0 for success and 1 for failure.
-
-	return 0;
-
-} # End of populate_subcountries.
 
 # ----------------------------------------------
 
@@ -347,10 +294,6 @@ Populate the I<subcountries> table, for 1 subcountry.
 
 Warning. The 2-letter code of the subcountry must be set with $self -> code2('XX') before calling
 this method.
-
-=head2 populate_subcountries()
-
-Populate the I<subcountries> table, for all subcountries.
 
 =head1 FAQ
 

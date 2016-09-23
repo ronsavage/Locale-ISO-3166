@@ -11,8 +11,6 @@ use File::Spec;
 
 use Moo;
 
-use Sort::Naturally; # For nsort.
-
 use Text::Xslate 'mark_raw';
 
 use Types::Standard qw/Any HashRef Str/;

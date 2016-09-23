@@ -129,11 +129,10 @@ sub get_statistics
 
 	return
 	{
-		countries_in_db             => $self -> get_country_count,
-		has_subcounties             => $#{$self -> who_has_subcountries} + 1,
-		subcountries_in_db          => $self -> get_subcountry_count,
-		subcountry_categories_in_db => $self -> get_subcountry_category_count,
-		subcountry_info_in_db		=> $self -> get_subcountry_info_count,
+		countries_in_db			=> $self -> get_country_count,
+		has_subcounties			=> $#{$self -> who_has_subcountries} + 1,
+		subcountries_in_db		=> $self -> get_subcountry_count,
+		subcountry_types_in_db	=> $self -> get_subcountry_type_count,
 	};
 
 } # End of get_statistics.
@@ -150,23 +149,13 @@ sub get_subcountry_count
 
 # ----------------------------------------------
 
-sub get_subcountry_category_count
+sub get_subcountry_type_count
 {
 	my($self) = @_;
 
-	return ($self -> dbh -> selectrow_array('select count(*) from subcountry_categories') )[0];
+	return ($self -> dbh -> selectrow_array('select count(*) from subcountry_types') )[0];
 
-} # End of get_subcountry_category_count.
-
-# ----------------------------------------------
-
-sub get_subcountry_info_count
-{
-	my($self) = @_;
-
-	return ($self -> dbh -> selectrow_array('select count(*) from subcountry_info') )[0];
-
-} # End of get_subcountry_info_count.
+} # End of get_subcountry_type_count.
 
 # ----------------------------------------------
 
@@ -191,18 +180,6 @@ sub read_subcountries_table
 	$sth -> fetchall_hashref('id');
 
 } # End of read_subcountries_table.
-
-# ----------------------------------------------
-
-sub read_subcountry_categories_table
-{
-	my($self) = @_;
-	my($sth)  = $self -> dbh -> prepare('select * from subcountry_categories');
-
-	$sth -> execute;
-	$sth -> fetchall_hashref('id');
-
-} # End of read_subcountry_categories_table.
 
 # ----------------------------------------------
 
@@ -247,9 +224,9 @@ sub report_Australian_statistics
 		}
 	}
 
-	@states = sort{$$a{sequence} <=> $$b{sequence} } @states;
+	@states = sort{$$a{code} cmp $$b{code} } @states;
 
-	$self -> log(info => "$$_{sequence}: $$_{name}") for @states;
+	$self -> log(info => "$$_{code}: $$_{name}") for @states;
 
 	# Return 0 for success and 1 for failure.
 
@@ -409,25 +386,6 @@ This is discussed further in L<WWW::Scraper::Wikipedia::ISO3166/Methods which re
 Returns a hashref of hashrefs for this SQL: 'select * from subcountries'.
 
 The key of the hashref is the primary key (integer) of the I<subcountries> table.
-
-This is discussed further in L<WWW::Scraper::Wikipedia::ISO3166/Methods which return hashrefs>.
-
-=head2 read_subcountry_categories_table
-
-Returns a hashref of hashrefs for this SQL: 'select * from subcountry_categories'.
-
-The key of the hashref is the primary key (integer) of the I<subcountry_categories> table.
-
-This is discussed further in L<WWW::Scraper::Wikipedia::ISO3166/Methods which return hashrefs>.
-
-=head2 read_subcountry_info_table
-
-Returns a hashref of hashrefs for this SQL: 'select * from subcountry_info'.
-
-The key of the hashref is the primary key (integer) of the I<subcountry_info> table.
-
-This info is a text summary of each country's subcountries, and is taken literally from the 3rd
-column - 'Subdivisions assigned codes' - of L<ISO3166-2|https://en.wikipedia.org/wiki/ISO_3166-2>.
 
 This is discussed further in L<WWW::Scraper::Wikipedia::ISO3166/Methods which return hashrefs>.
 
