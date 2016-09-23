@@ -51,6 +51,8 @@ sub populate_countries
 		push @one, $item;
 	}
 
+	$self -> dbh -> begin_work;
+
 	my($code2index)	= $self -> _save_countries(\@one);
 	$json_name		= 'iso_3166-2.json';
 	$path			= File::Spec -> catfile($dir_name, $json_name);
@@ -66,6 +68,7 @@ sub populate_countries
 	}
 
 	$self -> _save_subcountry_info($code2index, \@two);
+	$self -> dbh -> commit;
 
 	# Return 0 for success and 1 for failure.
 
@@ -191,32 +194,37 @@ sub _save_subcountry_info
 {
 	my($self, $code2index, $table) = @_;
 
-	$self -> dbh -> begin_work;
-	$self -> dbh -> do('delete from subcountry_types');
-
-	my($sql_1)		= 'insert into subcountry_types '
-						. '(fc_name, name) '
-									. 'values (?, ?)';
-	my($sth_1)		= $self -> dbh -> prepare($sql_1) || die "Unable to prepare SQL: $sql_1\n";
-	my($sql_2)		= 'update countries set has_subcountries = ? where id = ?';
-	my($sth_2)		= $self -> dbh -> prepare($sql_2) || die "Unable to prepare SQL: $sql_2\n";
-
 	my($alpha_2);
 	my($country_id);
 	my(%subcountry, $suffix);
+	my(%type);
 
 	for my $item (@$table)
 	{
 		($alpha_2, $suffix)			= ($1, $2) if ($$item{code} =~ /(..)-(.+)/);
 		$country_id					= $$code2index{$alpha_2};
 		$subcountry{$country_id}	= [] if (! $subcountry{$country_id});
+		$type{$$item{type} }		= 1;
 
 		push @{$subcountry{$country_id} }, $item
 	}
 
+	$self -> dbh -> do('delete from subcountry_types');
+
+	my($sql_1)	= 'insert into subcountry_types (fc_name, name) values (?, ?)';
+	my($sth_1)	= $self -> dbh -> prepare($sql_1) || die "Unable to prepare SQL: $sql_1\n";
+
+	for my $type (sort keys %type)
+	{
+		$sth_1 -> execute(fc($type), $type);
+	}
+
 	$sth_1 -> finish;
-	$sth_2 -> finish;
-	$self -> dbh -> commit;
+
+
+#	my($sql_2)		= 'update countries set has_subcountries = ? where id = ?';
+#	my($sth_2)		= $self -> dbh -> prepare($sql_2) || die "Unable to prepare SQL: $sql_2\n";
+#	$sth_2 -> finish;
 
 } # End of _save_subcountry_info.
 
